@@ -32,6 +32,8 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-	io.input(G, args::get(file));
+    io.input(G, args::get(file));
+
+	
     return 0;
 }
