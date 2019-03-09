@@ -2,7 +2,7 @@
 #define IO_H
 
 #include "Graph.h"
-#include <bits/stdc++.h>
+#include "headers.h"
 
 class IO {
 public:

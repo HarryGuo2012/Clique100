@@ -2,7 +2,7 @@
 #define GRAPH_H
 
 #include "Edge.h"
-#include <bits/stdc++.h>
+#include "headers.h"
 
 class Graph {
 public:
