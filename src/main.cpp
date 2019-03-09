@@ -7,9 +7,10 @@
 Graph *G;
 IO io;
 
-std::string inputFile, outputFile;
-
 int main(int argc, char *argv[]) {
+
+	/*-----Arguments setting-----*/
+
     args::ArgumentParser parser("Clique100: A clique seeking algorithm\n",
                                 "Zhenyu Guo");
     args::HelpFlag help(parser, "help", "Display this help menu",
@@ -32,8 +33,8 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    io.input(G, args::get(file));
+	/*-----Main process-----*/
 
-	
+    io.input(G, args::get(file));
     return 0;
 }
