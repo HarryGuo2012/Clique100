@@ -4,7 +4,10 @@
 
 #include "../third_party/args.hxx"
 
+#include "../include/Solve.h"
+
 Graph *G;
+Solve *solve;
 IO io;
 
 int main(int argc, char *argv[]) {
@@ -36,5 +39,10 @@ int main(int argc, char *argv[]) {
 	/*-----Main process-----*/
 
     io.input(G, args::get(file));
+
+    solve = new Solve(G);
+
+    solve->searching();
+
     return 0;
 }

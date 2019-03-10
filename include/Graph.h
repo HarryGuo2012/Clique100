@@ -1,25 +1,21 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
-#include "Edge.h"
+#include "arguments.h"
 #include "headers.h"
 
 class Graph {
-public:
-	Edge *edges;
-	int *head;
-	int N, M;
+   public:
+    std::bitset<BITSIZE> *Nei;
+    int N, M;
 
-	int *deg;
-	int maxDeg;
+    int *deg;
+    int maxDeg;
 
-	Graph (int, int); // init with the number of vertices and the number of edges
-	void addEdge (int ,int, int num = 1);// add an edge from u to v
+    Graph(int, int);  // init with the number of vertices and the number of edges
+    void addEdge(int &, int &);  // add an edge from u to v
 
-	~Graph ();
-
-private:
-	int cnt;
+    ~Graph();
 };
 
 #endif

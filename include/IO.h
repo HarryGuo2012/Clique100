@@ -7,7 +7,7 @@
 class IO {
 public:
 	IO();
-	void input(Graph *&, std::string, bool edgeTag = false);
+	void input(Graph *&, std::string);
 };
 
 #endif
