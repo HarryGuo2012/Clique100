@@ -1,7 +1,7 @@
 #include "../include/Graph.h"
 #include "../include/IO.h"
-#include "../include/headers.h"
 #include "../include/arguments.h"
+#include "../include/headers.h"
 
 #include "../third_party/args.hxx"
 
@@ -14,8 +14,7 @@ IO io;
 int k;
 
 int main(int argc, char *argv[]) {
-
-	/*-----Arguments setting-----*/
+    /*-----Arguments setting-----*/
 
     args::ArgumentParser parser("Clique100: A clique seeking algorithm\n",
                                 "Zhenyu Guo");
@@ -40,7 +39,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-	/*-----Main process-----*/
+    /*-----Main process-----*/
 
     io.input(G, args::get(file));
     k = args::get(K);
