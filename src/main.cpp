@@ -1,6 +1,7 @@
 #include "../include/Graph.h"
 #include "../include/IO.h"
 #include "../include/headers.h"
+#include "../include/arguments.h"
 
 #include "../third_party/args.hxx"
 
@@ -9,6 +10,8 @@
 Graph *G;
 Solve *solve;
 IO io;
+
+int k;
 
 int main(int argc, char *argv[]) {
 
@@ -20,6 +23,7 @@ int main(int argc, char *argv[]) {
                         {'h', "help"});
     args::Group required(parser, "", args::Group::Validators::All);
     args::Positional<std::string> file(required, "file", "Data file");
+    args::Positional<int> K(required, "k", "Size of Clique");
 
     try {
         parser.ParseCLI(argc, argv);
@@ -39,6 +43,7 @@ int main(int argc, char *argv[]) {
 	/*-----Main process-----*/
 
     io.input(G, args::get(file));
+    k = args::get(K);
 
     solve = new Solve(G);
 
