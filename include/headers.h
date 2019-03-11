@@ -5,3 +5,4 @@
 #include <set>
 #include <string>
 #include <bitset>
+#include <algorithm>

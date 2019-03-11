@@ -19,8 +19,14 @@ class Solve {
     std::bitset<BITSIZE> VmC;
     std::bitset<BITSIZE> C;
 
+    int *color;
+    int *countColorTable;
+
+    bool stopFlag;
+
     void setVmC();
     void setC();
+    void setColor();
 
     void dfs();
 
@@ -28,6 +34,7 @@ class Solve {
 
     bool reduction1();
     bool reduction2();
+    bool reduction3();
 
     void branch1();
 

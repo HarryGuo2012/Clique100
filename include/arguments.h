@@ -2,6 +2,6 @@
 #define ARGUMENTS_H
 
 const int BITSIZE = 4001;
-const int k = 100;
+const int k = 80;
 
 #endif
