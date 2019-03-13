@@ -17,15 +17,19 @@ void Solve::searching() {
     setC();
     setColor();
     stopFlag = false;
-    dfs();
+    dfs(VmC, C);
+
+    std::cout << "FinalC size: " << finalC.count() << std::endl;
+    output(finalC);
 }
 
 void Solve::setVmC() {
+    for (int v = 0; v < BITSIZE; ++v) VmC.reset(v);
     for (int v = 1; v <= G->N; ++v) VmC.set(v);
 }
 
 void Solve::setC() {
-    for (int v = 1; v <= G->N; ++v) C.reset(v);
+    for (int v = 0; v < BITSIZE; ++v) C.reset(v);
 }
 
 void Solve::setColor() {
@@ -50,7 +54,7 @@ void Solve::setColor() {
     }
 }
 
-void Solve::dfs() {
+void Solve::dfs(std::bitset<BITSIZE> vmc, std::bitset<BITSIZE> c) {
     // output(C);
     // std::cout << "----------" << std::endl;
     // std::cout << "C size: " << C.count() << std::endl;
@@ -59,90 +63,112 @@ void Solve::dfs() {
 
     if (stopFlag) return;
 
-    if (C.count() > finalC.count()) {
-        finalC = C;
-        std::cout << "FinalC size: " << finalC.count() << std::endl;
-    }
+    // if (c.count() > finalC.count()) {
+    //     finalC = c;
+    //     // std::cout << "FinalC size: " << finalC.count() << std::endl;
+    // }
 
-    if (stopCheck()) {
-        finalC = C;
+    if (stopCheck(c)) {
+        std::cout << "haha" << std::endl;
+        finalC = c;
         stopFlag = true;
         return;
     }
 
     /*-----reduction rule 1-----*/
-    while (reduction1()) {
+    while (reduction1(vmc, c)) {
     }
 
     /*-----reduction rule 2-----*/
 
-    if (reduction2()) return;
+    if (reduction2(vmc, c)) return;
 
     /*-----reduction rule 3-----*/
 
-    if (reduction3()) return;
+    if (reduction3(vmc, c)) return;
 
     /*-----branch rule 1-----*/
-    branch1();
+    branch1(vmc, c);
 }
 
-bool Solve::stopCheck() { return C.count() >= k; }
+bool Solve::stopCheck(std::bitset<BITSIZE> &c) { return c.count() >= k; }
 
-bool Solve::reduction1() {
-    auto cs = C.count();
+bool Solve::reduction1(std::bitset<BITSIZE> &vmc, std::bitset<BITSIZE> &c) {
+    auto cs = c.count();
 
     bool flag = false;
 
-    std::bitset<BITSIZE> T = VmC;
+    std::bitset<BITSIZE> T = vmc;
 
-    for (int v = VmC._Find_first(); v < VmC.size(); v = VmC._Find_next(v)) {
-        auto cap = G->Nei[v] & VmC;
+    for (int v = vmc._Find_first(); v < vmc.size(); v = vmc._Find_next(v)) {
+        auto cap = G->Nei[v] & vmc;
         if (cap.count() < k - cs - 1) {
             flag = true;
             T.reset(v);
         }
     }
-    VmC = T;
+    vmc = T;
     return flag;
 }
 
-bool Solve::reduction2() { return VmC.count() + C.count() < k; }
-
-bool Solve::reduction3() {
-    int cnt = 0;
-    for (int v = VmC._Find_first(); v < VmC.size(); v = VmC._Find_next(v)) {
-        auto &c = color[v];
-        if (countColorTable[c] == 0) ++cnt;
-        ++countColorTable[c];
-    }
-    for (int v = VmC._Find_first(); v < VmC.size(); v = VmC._Find_next(v)) {
-        auto &c = color[v];
-        --countColorTable[c];
-    }
-    // std::cout << "color: " << cnt << std::endl;
-    return cnt + C.count() < k;
+bool Solve::reduction2(std::bitset<BITSIZE> &vmc, std::bitset<BITSIZE> &c) {
+    return vmc.count() + c.count() < k;
 }
 
-void Solve::branch1() {
-    int v = VmC._Find_first();
+bool Solve::reduction3(std::bitset<BITSIZE> &vmc, std::bitset<BITSIZE> &c) {
+    int cnt = 0;
+    for (int v = vmc._Find_first(); v < vmc.size(); v = vmc._Find_next(v)) {
+        auto &col = color[v];
+        if (countColorTable[col] == 0) ++cnt;
+        ++countColorTable[col];
+    }
+    for (int v = vmc._Find_first(); v < vmc.size(); v = vmc._Find_next(v)) {
+        auto &col = color[v];
+        --countColorTable[col];
+    }
+    // std::cout << "color: " << cnt << std::endl;
+    return cnt + c.count() < k;
+}
+
+void Solve::branch1(std::bitset<BITSIZE> &vmc, std::bitset<BITSIZE> &c) {
+    int v = pickV(vmc);
     // std::cout << "v: " << v << std::endl;
+#pragma omp parallel sections
+    {
+#pragma omp section
+        {
+            /*-----select v-----*/
 
-    /*-----select v-----*/
+            std::bitset<BITSIZE> VmCBefore = vmc;
+            vmc = vmc & G->Nei[v];
+            c.set(v);
 
-    std::bitset<BITSIZE> VmCBefore = VmC;
-    VmC = VmC & G->Nei[v];
-    C.set(v);
+            dfs(vmc, c);
 
-    dfs();
+            c.reset(v);
+            vmc = VmCBefore;
+        }
 
-    C.reset(v);
-    VmC = VmCBefore;
+#pragma omp section
+        {
+            /*-----delete v-----*/
 
-    /*-----delete v-----*/
+            vmc.reset(v);
+            dfs(vmc, c);
+            vmc.set(v);
+        }
+    }
+}
 
-    VmC.reset(v);
-    dfs();
-    VmC.set(v);
+int Solve::pickV(std::bitset<BITSIZE> &vmc) {
+    int maxDeg = 0, maxV;
+    for (int v = vmc._Find_first(); v < vmc.size(); v = vmc._Find_next(v)) {
+        auto cap = G->Nei[v] & vmc;
+        if (cap.count() > maxDeg) {
+            maxDeg = cap.count(), maxV = v;
+        }
+    }
+    return maxV;
 }
 
 void Solve::output(std::bitset<BITSIZE> &B) {

@@ -4,6 +4,7 @@
 #include "Graph.h"
 #include "arguments.h"
 #include "headers.h"
+#include "omp.h"
 
 class Solve {
    public:
@@ -28,15 +29,17 @@ class Solve {
     void setC();
     void setColor();
 
-    void dfs();
+    void dfs(std::bitset<BITSIZE>, std::bitset<BITSIZE>);
 
-    bool stopCheck();
+    bool stopCheck(std::bitset<BITSIZE> &);
 
-    bool reduction1();
-    bool reduction2();
-    bool reduction3();
+    bool reduction1(std::bitset<BITSIZE> &, std::bitset<BITSIZE> &);
+    bool reduction2(std::bitset<BITSIZE> &, std::bitset<BITSIZE> &);
+    bool reduction3(std::bitset<BITSIZE> &, std::bitset<BITSIZE> &);
 
-    void branch1();
+    void branch1(std::bitset<BITSIZE> &, std::bitset<BITSIZE> &);
+
+    int pickV(std::bitset<BITSIZE> &);
 
     void output(std::bitset<BITSIZE> &);
 };
